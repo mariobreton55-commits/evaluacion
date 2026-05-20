@@ -1,0 +1,395 @@
+[.ShellClassInfo]
+IconResource=C:\Users\mario\AppData\Local\Microsoft\OneDrive\OneDrive.exe,5
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Evaluación de Presentador – Integrando</title>
+<style>
+:root {
+  --pri: #1a3a5c;
+  --acc: #e8a020;
+  --acc2: #2e86ab;
+  --bg: #f0f4f8;
+  --card: #fff;
+  --txt: #1e293b;
+  --mut: #64748b;
+  --bdr: #e2e8f0;
+  --rad: 14px;
+  --sh: 0 2px 10px rgba(0,0,0,0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--txt); min-height: 100vh; }
+
+/* COPY BUTTON */
+#copyBar { position: sticky; top: 0; z-index: 999; background: #0f2744; padding: 8px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+#copyBar span { color: rgba(255,255,255,0.7); font-size: 11px; }
+#copyBtn { background: var(--acc); color: white; border: none; border-radius: 8px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+#copyBtn:active { opacity: 0.85; }
+#copyMsg { color: #4ade80; font-size: 11px; font-weight: 600; display: none; }
+
+/* HEADER */
+.hdr { background: var(--pri); color: white; padding: 20px 20px 14px; text-align: center; }
+.hdr .brand { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; opacity: 0.6; margin-bottom: 4px; }
+.hdr h1 { font-size: 19px; font-weight: 800; }
+.hdr p { font-size: 12px; opacity: 0.7; margin-top: 4px; }
+.prog { height: 5px; background: rgba(255,255,255,0.15); }
+.prog-fill { height: 100%; background: var(--acc); width: 0%; transition: width 0.3s; }
+
+/* FORM */
+.wrap { max-width: 540px; margin: 0 auto; padding: 14px 14px 30px; }
+
+.card { background: var(--card); border-radius: var(--rad); margin-bottom: 12px; box-shadow: var(--sh); overflow: hidden; }
+
+/* Nombres */
+.names { padding: 14px; }
+.names .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.names label { font-size: 11px; font-weight: 700; color: var(--mut); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 5px; }
+.names input { width: 100%; border: 1.5px solid var(--bdr); border-radius: 8px; padding: 9px 11px; font-size: 15px; outline: none; color: var(--txt); }
+.names input:focus { border-color: var(--acc2); }
+
+/* Section headers */
+.sec-hdr { padding: 10px 14px; display: flex; align-items: center; gap: 9px; background: var(--pri); }
+.sec-hdr.sub { background: #f8f3e6; border-bottom: 1px solid var(--bdr); }
+.sec-hdr .ico { font-size: 17px; }
+.sec-hdr .lbl { font-size: 13px; font-weight: 700; color: white; }
+.sec-hdr.sub .lbl { color: #92600a; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+
+/* Items */
+.item { padding: 9px 14px; border-bottom: 1px solid var(--bdr); }
+.item:last-child { border-bottom: none; }
+.item-txt { font-size: 13px; color: var(--txt); margin-bottom: 7px; line-height: 1.4; }
+.btns { display: flex; gap: 6px; }
+.rb { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--bdr); background: white; font-size: 14px; font-weight: 700; color: var(--mut); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
+.rb.on { border-color: var(--acc); background: var(--acc); color: white; transform: scale(1.08); }
+.rb:active { transform: scale(0.93); }
+
+/* Fortaleza chips */
+.chips { padding: 12px 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { padding: 7px 13px; border-radius: 20px; border: 2px solid var(--bdr); background: white; font-size: 12px; font-weight: 600; color: var(--mut); cursor: pointer; transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
+.chip.on { border-color: var(--acc2); background: var(--acc2); color: white; }
+
+/* Textarea */
+.reco-area { padding: 12px 14px; }
+.reco-area textarea { width: 100%; border: 1.5px solid var(--bdr); border-radius: 10px; padding: 10px 12px; font-size: 14px; font-family: inherit; color: var(--txt); resize: none; min-height: 85px; outline: none; }
+.reco-area textarea:focus { border-color: var(--acc2); }
+
+/* Validation */
+.val-msg { background: #fffbeb; border: 1.5px solid #fcd34d; border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #92400e; margin-bottom: 12px; display: none; }
+.val-msg.show { display: block; }
+
+/* Send */
+.send-btn { width: 100%; padding: 15px; background: #25D366; color: white; border: none; border-radius: var(--rad); font-size: 16px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 14px rgba(37,211,102,0.4); transition: all 0.2s; -webkit-tap-highlight-color: transparent; }
+.send-btn:active { transform: scale(0.98); }
+.send-btn svg { width: 22px; height: 22px; fill: white; flex-shrink: 0; }
+
+/* Thank you */
+.ty { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; padding: 40px 20px; }
+.ty .big { font-size: 64px; margin-bottom: 12px; }
+.ty h2 { font-size: 22px; font-weight: 800; color: var(--pri); margin-bottom: 8px; }
+.ty p { font-size: 14px; color: var(--mut); line-height: 1.6; }
+.ty .again { margin-top: 22px; padding: 11px 26px; background: var(--pri); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- COPY BAR -->
+<div id="copyBar">
+  <span>⬇️ Para guardar el archivo HTML:</span>
+  <button id="copyBtn">📋 Copiar código</button>
+  <span id="copyMsg">✅ ¡Copiado!</span>
+</div>
+
+<!-- FORM -->
+<div id="mainForm">
+  <div class="hdr">
+    <div class="brand">Integrando</div>
+    <h1>Presentaciones Poderosas</h1>
+    <p>Evaluación entre pares &nbsp;·&nbsp; Escala: 1 = Área de mejora &nbsp; 5 = Excelente</p>
+  </div>
+  <div class="prog"><div class="prog-fill" id="pFill"></div></div>
+
+  <div class="wrap">
+
+    <!-- NOMBRES -->
+    <div class="card">
+      <div class="names">
+        <div class="row">
+          <div>
+            <label>Presentador evaluado</label>
+            <input type="text" id="fEvaluado" placeholder="Nombre completo" autocomplete="off">
+          </div>
+          <div>
+            <label>Tu nombre</label>
+            <input type="text" id="fEvaluador" placeholder="Tu nombre" autocomplete="off">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRESENCIA -->
+    <div class="card">
+      <div class="sec-hdr"><span class="ico">🎯</span><span class="lbl">Presencia</span></div>
+      <div id="grp-presencia"></div>
+    </div>
+
+    <!-- ATENCIÓN -->
+    <div class="card">
+      <div class="sec-hdr"><span class="ico">👁️</span><span class="lbl">Atención</span></div>
+      <div class="sec-hdr sub"><span class="lbl">Voz</span></div>
+      <div id="grp-voz"></div>
+      <div class="sec-hdr sub"><span class="lbl">Postura y Movimiento</span></div>
+      <div id="grp-postura"></div>
+      <div class="sec-hdr sub"><span class="lbl">Lenguaje</span></div>
+      <div id="grp-lenguaje"></div>
+      <div class="sec-hdr sub"><span class="lbl">Contacto Visual</span></div>
+      <div id="grp-visual"></div>
+    </div>
+
+    <!-- MOTIVACIÓN -->
+    <div class="card">
+      <div class="sec-hdr"><span class="ico">⚡</span><span class="lbl">Motivación e Impacto</span></div>
+      <div id="grp-motivacion"></div>
+    </div>
+
+    <!-- FORTALEZA -->
+    <div class="card">
+      <div class="sec-hdr" style="background:#2e86ab"><span class="ico">🌟</span><span class="lbl">Su mayor fortaleza fue…</span></div>
+      <div class="chips" id="chipArea"></div>
+    </div>
+
+    <!-- RECOMENDACIÓN -->
+    <div class="card">
+      <div class="sec-hdr" style="background:#3d5a80"><span class="ico">💬</span><span class="lbl">Recomendación principal</span></div>
+      <div class="reco-area">
+        <textarea id="fReco" placeholder="Escribe una recomendación concreta y constructiva para este presentador…"></textarea>
+      </div>
+    </div>
+
+    <div class="val-msg" id="valMsg">⚠️ Completa los nombres y califica todos los criterios antes de enviar.</div>
+
+    <button class="send-btn" id="sendBtn">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.136.564 4.14 1.546 5.876L.057 23.886a.75.75 0 0 0 .918.919l6.168-1.476A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.714 9.714 0 0 1-4.964-1.362l-.356-.212-3.676.88.897-3.57-.233-.368A9.72 9.72 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+      Enviar evaluación por WhatsApp
+    </button>
+
+  </div>
+</div>
+
+<!-- GRACIAS -->
+<div class="ty" id="tyScreen">
+  <div class="big">✅</div>
+  <h2>¡Evaluación enviada!</h2>
+  <p>Tu retroalimentación ayuda a este<br>presentador a seguir creciendo.</p>
+  <button class="again" id="againBtn">Evaluar a otro presentador</button>
+</div>
+
+<script>
+var DATA = {
+  presencia: [
+    "Se percibe como un presentador seguro",
+    "Genera confianza ante el grupo",
+    "Se mantiene conectado con el grupo durante la presentación",
+    "Presenta con energía y seguridad",
+    "Controla los nervios adecuadamente"
+  ],
+  voz: [
+    "Maneja un volumen adecuado",
+    "Se percibe como un presentador fluído",
+    "Evita la monotonía modulando su voz",
+    "Vocaliza y habla claramente",
+    "Utiliza pausas para lograr mayor impacto"
+  ],
+  postura: [
+    "Mantiene una postura que comunica seguridad",
+    "Se para erguido y bien plantado",
+    "Evita movimientos que distraen a la audiencia",
+    "Se mueve por el escenario adecuadamente",
+    "Utiliza sus manos para reforzar su comunicación"
+  ],
+  lenguaje: [
+    "Se comunica de manera clara y profesional",
+    "Utiliza el lenguaje apropiado para la audiencia",
+    "Demuestra estar convencido del tema que presenta"
+  ],
+  visual: [
+    "Hace contacto visual con todas las personas del grupo",
+    "Mira a los ojos de manera natural",
+    "Su mirada se focaliza principalmente en la audiencia"
+  ],
+  motivacion: [
+    "Inspira confianza",
+    "Convence con sus argumentos"
+  ]
+};
+
+var CHIPS = ["Presencia","Voz","Postura","Lenguaje","Contacto visual","Convicción","Energía","Claridad"];
+var scores = {};
+var chipSel = "";
+
+// Build rating items
+function buildGroup(groupId, key) {
+  var el = document.getElementById(groupId);
+  DATA[key].forEach(function(txt, i) {
+    var id = key + "_" + i;
+    scores[id] = 0;
+    var div = document.createElement("div");
+    div.className = "item";
+    var p = document.createElement("div");
+    p.className = "item-txt";
+    p.textContent = txt;
+    div.appendChild(p);
+    var btns = document.createElement("div");
+    btns.className = "btns";
+    btns.id = "btns_" + id;
+    for (var v = 1; v <= 5; v++) {
+      (function(val) {
+        var b = document.createElement("button");
+        b.className = "rb";
+        b.textContent = val;
+        b.onclick = function() { pick(id, val); };
+        btns.appendChild(b);
+      })(v);
+    }
+    div.appendChild(btns);
+    el.appendChild(div);
+  });
+}
+
+function pick(id, val) {
+  scores[id] = val;
+  var btns = document.getElementById("btns_" + id).querySelectorAll(".rb");
+  btns.forEach(function(b, i) { b.classList.toggle("on", i + 1 === val); });
+  updateProg();
+}
+
+function updateProg() {
+  var total = Object.keys(scores).length;
+  var filled = Object.values(scores).filter(function(v) { return v > 0; }).length;
+  document.getElementById("pFill").style.width = (filled / total * 100) + "%";
+}
+
+// Build chips
+function buildChips() {
+  var area = document.getElementById("chipArea");
+  CHIPS.forEach(function(c) {
+    var b = document.createElement("button");
+    b.className = "chip";
+    b.textContent = c;
+    b.onclick = function() {
+      chipSel = c;
+      area.querySelectorAll(".chip").forEach(function(x) { x.classList.remove("on"); });
+      b.classList.add("on");
+    };
+    area.appendChild(b);
+  });
+}
+
+// Average
+function avg(key) {
+  var keys = Object.keys(scores).filter(function(k) { return k.indexOf(key + "_") === 0; });
+  var sum = keys.reduce(function(a, k) { return a + scores[k]; }, 0);
+  return (sum / keys.length).toFixed(1);
+}
+
+// Stars
+function stars(n) {
+  var f = parseFloat(n);
+  if (f >= 4.5) return "★★★★★";
+  if (f >= 3.5) return "★★★★☆";
+  if (f >= 2.5) return "★★★☆☆";
+  if (f >= 1.5) return "★★☆☆☆";
+  return "★☆☆☆☆";
+}
+
+// Send
+document.getElementById("sendBtn").onclick = function() {
+  var ev = document.getElementById("fEvaluado").value.trim();
+  var er = document.getElementById("fEvaluador").value.trim();
+  if (!ev || !er) { showVal(); return; }
+  var allDone = Object.values(scores).every(function(v) { return v > 0; });
+  if (!allDone) { showVal(); return; }
+
+  var reco = document.getElementById("fReco").value.trim() || "Sin recomendación adicional.";
+
+  var p  = avg("presencia");
+  var v  = avg("voz");
+  var po = avg("postura");
+  var l  = avg("lenguaje");
+  var vi = avg("visual");
+  var m  = avg("motivacion");
+
+  var msg =
+    "\uD83C\uDFA4 *EVALUACI\u00D3N DE PRESENTADOR*\n" +
+    "*Presentaciones Poderosas \u2013 Integrando*\n\n" +
+    "\uD83D\uDC64 *Presentador:* " + ev + "\n" +
+    "\u270D\uFE0F *Evaluado por:* " + er + "\n\n" +
+    "\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\n\n" +
+    "\uD83C\uDFAF *PRESENCIA* \n" +
+    stars(p) + "  " + p + " / 5\n\n" +
+    "\uD83C\uDF99\uFE0F *VOZ*\n" +
+    stars(v) + "  " + v + " / 5\n\n" +
+    "\uD83E\uDDD8 *POSTURA Y MOVIMIENTO*\n" +
+    stars(po) + "  " + po + " / 5\n\n" +
+    "\uD83D\uDCAC *LENGUAJE*\n" +
+    stars(l) + "  " + l + " / 5\n\n" +
+    "\uD83D\uDC40 *CONTACTO VISUAL*\n" +
+    stars(vi) + "  " + vi + " / 5\n\n" +
+    "\u26A1 *MOTIVACI\u00D3N E IMPACTO*\n" +
+    stars(m) + "  " + m + " / 5\n\n" +
+    "\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\n" +
+    "\uD83C\uDF1F *Mayor fortaleza:* " + (chipSel || "No indicada") + "\n\n" +
+    "\uD83D\uDCDD *Recomendaci\u00F3n:*\n" + reco + "\n\n" +
+    "_Evaluaci\u00F3n generada en taller \u00B7 Integrando_";
+
+  window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+  document.getElementById("mainForm").style.display = "none";
+  document.getElementById("tyScreen").style.display = "flex";
+};
+
+// Validation
+function showVal() {
+  var m = document.getElementById("valMsg");
+  m.classList.add("show");
+  m.scrollIntoView({ behavior: "smooth", block: "center" });
+  setTimeout(function() { m.classList.remove("show"); }, 4000);
+}
+
+// Reset
+document.getElementById("againBtn").onclick = function() {
+  document.getElementById("fEvaluado").value = "";
+  document.getElementById("fEvaluador").value = "";
+  document.getElementById("fReco").value = "";
+  chipSel = "";
+  Object.keys(scores).forEach(function(k) { scores[k] = 0; });
+  document.querySelectorAll(".rb").forEach(function(b) { b.classList.remove("on"); });
+  document.querySelectorAll(".chip").forEach(function(b) { b.classList.remove("on"); });
+  document.getElementById("pFill").style.width = "0%";
+  document.getElementById("mainForm").style.display = "block";
+  document.getElementById("tyScreen").style.display = "none";
+  window.scrollTo(0, 0);
+};
+
+// Copy HTML to clipboard
+document.getElementById("copyBtn").onclick = function() {
+  var html = document.documentElement.outerHTML;
+  navigator.clipboard.writeText(html).then(function() {
+    document.getElementById("copyMsg").style.display = "inline";
+    setTimeout(function() { document.getElementById("copyMsg").style.display = "none"; }, 3000);
+  }).catch(function() {
+    alert("Tu navegador no permitió copiar automáticamente. Usa Ctrl+U para ver el código fuente y cópialo manualmente.");
+  });
+};
+
+// Init
+buildGroup("grp-presencia", "presencia");
+buildGroup("grp-voz", "voz");
+buildGroup("grp-postura", "postura");
+buildGroup("grp-lenguaje", "lenguaje");
+buildGroup("grp-visual", "visual");
+buildGroup("grp-motivacion", "motivacion");
+buildChips();
+</script>
+</body>
+</html>
